@@ -14,6 +14,7 @@ export const Catalog: React.FC = () => {
 
     useEffect(() => {
         dispatch(productsLoad())
+        console.log(products,'products');
     }, []);
 
     const items: React.ReactNode = products ?
@@ -32,7 +33,7 @@ export const Catalog: React.FC = () => {
                     <h1>Catalog</h1>
                 </div>
             </div>
-            <div className="row">
+            <div className="row" data-testid="listitem">
                 {items}
             </div>
         </div>

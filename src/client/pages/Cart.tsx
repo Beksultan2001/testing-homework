@@ -31,14 +31,14 @@ export const Cart: React.FC = () => {
         const rows = Object.entries(cart).map(([id, item], index) => {
 
             return (
-                <tr key={id} data-testid={id}>
-                    <th className={bem('Index')} scope="row">{index + 1}</th>
-                    <td className={bem('Name')}>{item.name}</td>
-                    <td className={bem('Price')}>${item.price}</td>
-                    <td className={bem('Count')}>{item.count}</td>
-                    <td className={bem('Total')}>${item.count * item.price}</td>
+                <tr key={id} data-testid={`row-${id}`}>
+                  <th className={bem('Index')} scope="row" data-testid={`row-${id}-cell-1`}>{index + 1}</th>
+                  <td className={bem('Name')} data-testid={`row-${id}-cell-2`}>{item.name}</td>
+                  <td className={bem('Price')} data-testid={`row-${id}-cell-3`}>${item.price}</td>
+                  <td className={bem('Count')} data-testid={`row-${id}-cell-4`}>{item.count}</td>
+                  <td className={bem('Total')} data-testid={`row-${id}-cell-5`}>${item.count * item.price}</td>
                 </tr>
-            );
+              );
         });
 
         const total = Object.values(cart).reduce((sum, { count, price }) => sum + count * price, 0);
@@ -68,7 +68,7 @@ export const Cart: React.FC = () => {
     } else {
         content = (
             <>
-                Cart is empty. Please select products in the <Link to="/catalog">catalog</Link>.
+                Cart is empty. Please select products in the <Link to="/catalog" data-testid="linktomain">catalog</Link>.
             </>
         );
     }
