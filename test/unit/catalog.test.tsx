@@ -95,7 +95,7 @@ describe('Каталог', () => {
       expect(state.cart[product.id].count).toBe(1);
   });
   it('если товар уже добавлен в корзину, повторное нажатие кнопки "добавить в корзину" должно увеличивать его количество', async () => {
-      const product = { id: 1234, name: 'testProduct1', price: 59,description: 'sdf',color: 'sfsd',material: 'sdfsdagsdg'};
+      const product = { id: 1234, name: 'testProduct1', price: 59,description: 'sdf',color: 'sfsd',material: 'sdfsdagsdg',count: 0};
 
       store.dispatch(addToCart(product));
       store.dispatch(addToCart(product));
