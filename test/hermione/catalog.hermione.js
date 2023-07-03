@@ -1,6 +1,6 @@
 const { assert } = require('chai');
 
-describe.skip('Каталог', async function() {
+describe('Каталог', async function() {
     it('в корзине должна быть кнопка "очистить корзину", по нажатию на которую все товары должны удаляться', async function({browser}) {
       const puppeteer = await browser.getPuppeteer();
       const [page] = await puppeteer.pages();
