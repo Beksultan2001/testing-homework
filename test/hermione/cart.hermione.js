@@ -8,31 +8,36 @@ describe('Cart', () => {
 
         await page.goto(`http://localhost:3000/hw/store/catalog/0?bug_id=${process.env.BUG_ID}`);
 
-        await page.waitForXPath("//*[text()='Add to Cart']");
+        await page.waitForTimeout(2000);
+
+        await page.waitForSelector('.ProductDetails-AddToCart', { timeout: 5000 });
+        await page.click('.ProductDetails-AddToCart');
+  
+        await page.waitForTimeout(2000);
+
         const addToCartButton = await page.$x("//*[text()='Add to Cart']");
         await addToCartButton[0].click();
-        await page.goto(`http://localhost:3000/hw/store/cart?bug_id=${process.env.BUG_ID}`);
+        await page.waitForTimeout(2000);
 
+        const CartBadge = await page.$('.CartBadge'); 
+        assert.isNotNull(CartBadge, 'Продукт не добавляется');
+        await page.click('.navbar-nav a[href="/hw/store/cart"]');        
         await page.type('#f-name', 'Ivan Ivanov');
 
-        await page.type('#f-phone', '9999999999');
+        await page.type('#f-phone', '87716120025');
 
         await page.type('#f-address', 'Address');
         await page.waitForTimeout(2000);
-
         await page.click('.Form-Submit');
-
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(2000);  
 
         const phoneErrorMsg = await page.$('.invalid-feedback');
-        assert.isNull(phoneErrorMsg,'Phone is invalid');
+        assert.isNull(phoneErrorMsg,'Не удалось оформить заказ');
 
         const SuccessMessage = await page.$('.Cart-SuccessMessage');
         const successMessageClass = await page.evaluate(el => el.className, SuccessMessage);
         
         assert.include(successMessageClass, 'alert-success', 'Success message does not contain "alert-success" class');
-        
-
         await page.waitForTimeout(2000);
 
         const orderNumberElement = await page.waitForSelector('.Cart-Number'); 

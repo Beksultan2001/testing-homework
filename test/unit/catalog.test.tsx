@@ -7,6 +7,17 @@ import { ExampleApi, CartApi, LOCAL_STORAGE_CART_KEY } from '../../src/client/ap
 import {addToCart, initStore } from '../../src/client/store';
 import {setupServer} from 'msw/node';
 import { rest } from 'msw';
+import {ExampleStore} from "../../src/server/data";
+import { createStore } from 'redux';
+import {Catalog} from "../../src/client/pages/Catalog";
+import '@testing-library/jest-dom/extend-expect';
+
+
+let bug_id = '';
+
+if (process.env.BUG_ID !== undefined) {
+    bug_id = process.env.BUG_ID
+}
 
 const server = setupServer(
     rest.get('/hw/store/api/products', (req, res, ctx) => {
@@ -131,4 +142,31 @@ describe('Каталог', () => {
       );
       expect(mockLocalStorage[LOCAL_STORAGE_CART_KEY]).toEqual(JSON.stringify(mockCartState));
   });
+    it ('У товаров есть название, цена и ссылка на страницу с информацией', async ()=> {
+      const products = new ExampleStore().getAllProducts(Number(bug_id)); 
+      const initState = {
+          cart: {},
+          products: [
+              { ...products[0], id: 1, name: products[0].name ? "товар1" : undefined, price: products[0].price ? 100 : undefined},
+              { ...products[1], id: 2, name: products[1].name ? "товар2" : undefined, price: products[1].price ? 300 : undefined},
+          ]
+      }
+      const store = createStore(() => initState);
+
+      render(
+          <MemoryRouter>
+              <Provider store={store}>
+                  <Catalog />
+              </Provider>
+          </MemoryRouter>
+      )
+
+      expect(screen.queryByText('товар1')).not.toBeNull()
+      expect(screen.queryByText('$100')).toBeInTheDocument()
+
+      expect(screen.queryByText('товар2')).not.toBeNull()
+      expect(screen.queryByText('$300')).toBeInTheDocument()
+
+      expect(screen.queryAllByRole('link', {name: /Details/i})).toHaveLength(2)
+  })
 });

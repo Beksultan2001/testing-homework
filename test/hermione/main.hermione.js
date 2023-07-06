@@ -1,5 +1,17 @@
 const { assert } = require('chai');
 
+let bug_id = '';
+let add_url= ``
+if (process.env.BUG_ID !== undefined) {
+    bug_id = process.env.BUG_ID
+    add_url=`/?bug_id=${bug_id}`; 
+}
+let base_url=`http://localhost:3000/hw/store`;
+let bug_url=`http://localhost:3000/hw/store?bug_id=${bug_id}`;
+let main_url=base_url+add_url; 
+
+
+
 describe('Общие требования:', async function() {
     it('в шапке отображаются ссылки на страницы магазина, а также ссылка на корзину', async function({browser}) {
         const puppeteer = await browser.getPuppeteer();
@@ -53,5 +65,54 @@ describe('Общие требования:', async function() {
             return menuStyle.getPropertyValue('display') !== 'none';
         });
         assert.isFalse(isMenuVisible, 'Меню не закрывается при выборе элемента из меню "гамбургера"');
+    });
+    describe("Тест информации продукта (BUG_ID=2,3,5,6,9,10)", async function () {
+        it("Тест информации продукта", async function ({ browser }) {
+            const puppeteer = await browser.getPuppeteer();
+            const [page] = await puppeteer.pages();
+    
+            await browser.url("http://localhost:3000/hw/store" + add_url);
+    
+            await page.goto("http://localhost:3000/hw/store/catalog" + add_url);
+    
+            const searchResultSelector = ".ProductItem-DetailsLink";
+            await page.waitForSelector(searchResultSelector, { timeout: 1000 });
+            await page.click(searchResultSelector);
+    
+            const detailsSelector = ".ProductDetails";
+            await page.waitForSelector(detailsSelector, { timeout: 1000 });
+    
+            const nameSelector = ".ProductDetails-Name";
+            await page.waitForSelector(nameSelector, { timeout: 1000 });
+    
+            const descSelector = ".ProductDetails-Description";
+            await page.waitForSelector(descSelector, { timeout: 1000 });
+    
+            const priceSelector = ".ProductDetails-Price";
+            await page.waitForSelector(priceSelector, { timeout: 1000 });
+    
+            const colorSelector = ".ProductDetails-Color";
+            await page.waitForSelector(colorSelector, { timeout: 1000 });
+    
+            const materialSelector = ".ProductDetails-Material";
+            await page.waitForSelector(materialSelector, { timeout: 1000 });
+    
+            const buttonSelector = ".ProductDetails-AddToCart";
+            await page.waitForSelector(buttonSelector, { timeout: 1000 });
+    
+            const imageSelector = ".Image";
+            await page.waitForSelector(imageSelector, { timeout: 1000 });
+    
+            await browser.assertView("product_details_content", ".ProductDetails", {
+                ignoreElements: [
+                    ".ProductDetails-Name",
+                    ".ProductDetails-Description",
+                    ".ProductDetails-Price",
+                    ".ProductDetails-Color",
+                    ".ProductDetails-Material",
+                    ".Image",
+                ],
+            });
+        });
     });
 });
